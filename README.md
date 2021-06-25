@@ -9,6 +9,7 @@ It comprises some client-side javascript and css, and a REST API.
 Since it is written in [Rust], it can be used with any http server handling [`proxy_pass`] or equivalent.
 
 ![what it looks like](docs/img.png)
+
 _still a little rough, but the base is here…_
 
 ## Installation & Usage
