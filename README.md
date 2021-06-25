@@ -1,7 +1,7 @@
 # Dezrevelloù
 _still alpha af_
 
-Dezrevelloù is a commenting solution aimed to (but not only) static websites.
+Dezrevelloù is a lightweight (js + css: 4.6k, 1.6k gzip'd) commenting solution aimed to (but not only) static websites.
 Its name is derived from the [breton] word for "comment".
 
 It comprises some client-side javascript and css, and a REST API.
@@ -51,7 +51,7 @@ its own subdomain.
 I mentioned [CORS] previously, and here's the catch:
 
 The server serving the previous HTML __must__ add a header to its response,
-allowing CORS requests to the `https://comments.my.domain/`. An exemple of this, using [nginx] would look like this:
+allowing CORS requests to the `https://comments.my.domain/`. An exemple of this, using nginx would look like this:
 
 ```
 server {
