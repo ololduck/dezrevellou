@@ -20,9 +20,12 @@ const DB_FNAME: &str = "comments.json";
 pub fn init_db() -> Db {
     match File::open(DB_FNAME) {
         Ok(json) => {
-            let comments = from_reader(json).expect("Could not read db file");
-            info!("read file {} for db initialization", DB_FNAME);
-            Arc::new(Mutex::new(comments))
+            if json.metadata().expect("could not read metadata").is_file() {
+                let comments = from_reader(json).expect("Could not read db file");
+                info!("read file {} for db initialization", DB_FNAME);
+                return Arc::new(Mutex::new(comments));
+            }
+            Arc::new(Mutex::new(Vec::new()))
         }
         Err(_) => {
             info!("Init'd new db");
