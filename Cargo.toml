@@ -1,6 +1,6 @@
 [package]
 name = "dezrevellou"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Paul Ollivier <contact@paulollivier.fr>"]
 edition = "2018"
 

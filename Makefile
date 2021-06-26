@@ -27,14 +27,17 @@ target/.docker: dist/dezrevellou Dockerfile
 
 dist/%.html: src/%.html
 	cp $< $@
-dist/dezrevellou.js dist/dezrevellou.js.map: dist node_modules src/dezrevellou.ts
-	node_modules/.bin/tsc --sourceMap --outFile dist/dezrevellou.js src/dezrevellou.ts
+
+dist/dezrevellou.js dist/dezrevellou.js.map dist/dezrevellou.ts: dist node_modules src/dezrevellou.ts
+	cp src/dezrevellou.ts dist/dezrevellou.ts
+	cd dist && ../node_modules/.bin/tsc --sourceMap --outFile dezrevellou.js dezrevellou.ts
 
 dist/dezrevellou.min.js dist/dezrevellou.min.js.map: dist node_modules dist/dezrevellou.js
-	node_modules/.bin/uglifyjs dist/dezrevellou.js --source-map url=dezrevellou.min.js.map --compress --mangle -o $@
+	cd dist && ../node_modules/.bin/uglifyjs dezrevellou.js --source-map --compress --mangle -o dezrevellou.min.js
 
-dist/dezrevellou.css dist/dezrevellou.css.map: dist node_modules src/dezrevellou.sass
-	node_modules/.bin/sass src/dezrevellou.sass --source-map dist/dezrevellou.css
+dist/dezrevellou.css dist/dezrevellou.css.map dist/dezrevellou.sass: dist node_modules src/dezrevellou.sass
+	cp src/dezrevellou.sass dist/dezrevellou.sass
+	cd dist && ../node_modules/.bin/sass dezrevellou.sass --source-map dezrevellou.css
 
 dist/dezrevellou.min.css dist/dezrevellou.min.css.map: dist node_modules dist/dezrevellou.css
 	cd dist && ../node_modules/.bin/cleancss -O2 --source-map --input-source-map dezrevellou.css.map -o dezrevellou.min.css dezrevellou.css

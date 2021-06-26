@@ -143,14 +143,18 @@ class Dezrevellou {
     }
 
     postNewComment() {
+        let comment_field = (<HTMLInputElement>document.getElementsByName("dezrevellou-comment")[0]);
+        let name_field = (<HTMLInputElement>document.getElementsByName("dezrevellou-author-name")[0]);
+        let website_field = (<HTMLInputElement>document.getElementsByName("dezrevellou-author-website")[0]);
+        let email_field = (<HTMLInputElement>document.getElementsByName("dezrevellou-author-email")[0]);
         const c = new ArticleComment({
             uid: null,
-            comment: (<HTMLInputElement>document.getElementsByName("dezrevellou-comment")[0]).value,
+            comment: comment_field.value,
             on: this.slug,
             author: {
-                name: (<HTMLInputElement>document.getElementsByName("dezrevellou-author-name")[0]).value,
-                website: (<HTMLInputElement>document.getElementsByName("dezrevellou-author-website")[0]).value,
-                email: (<HTMLInputElement>document.getElementsByName("dezrevellou-author-email")[0]).value,
+                name: name_field.value,
+                website: website_field.value,
+                email: email_field.value,
             }
         });
         fetch(this.apiUrl + "/comments/" + this.slug, {
@@ -159,6 +163,15 @@ class Dezrevellou {
                 'Content-Type': 'application/json;charset=UTF-8'
             },
             body: JSON.stringify(c)
-        }).then(_e => console.log("sent new comment")).then(() => this.getAndRenderComments()).catch(e => console.error(e));
+        })
+            .then(_e => console.log("sent new comment"))
+            .then(() => this.getAndRenderComments())
+            .then(() => {
+                comment_field.value = "";
+                name_field.value = "";
+                website_field.value = "";
+                email_field.value = "";
+            })
+            .catch(e => console.error(e));
     }
 }

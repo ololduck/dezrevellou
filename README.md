@@ -19,7 +19,7 @@ The installation is more complicated than i'd like, "thanks" to [CORS].
 ### The api
 
 The api is responsible for handling the persistent storage of comments, as well as querying them.
-As said, it is a binary exposing an HTTP interface that runs well in [docker], then proxyfied by a "real" webserver.
+As said, it is a binary exposing an HTTP interface that runs well in docker, then proxyfied by a "real" webserver.
 
 It can also serve the client part via `/static/dezrevellou.min.{css,js}`.
 
@@ -68,7 +68,7 @@ its own subdomain.
 I mentioned [CORS] previously, and here's the catch:
 
 The server serving the previous HTML __must__ add a header to its response,
-allowing CORS requests to the `https://comments.my.domain/`. An exemple of this, using nginx would look like this:
+allowing CORS requests to the `https://comments.my.domain/`. An example of this, using nginx would look like this:
 
 ```
 server {
