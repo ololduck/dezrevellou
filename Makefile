@@ -1,10 +1,12 @@
 RS_SOURCES := $(wildcard src/*.rs)
 
-.PHONY: release clean test clippy docker
+.PHONY: release clean test clippy docker static
 
 release: dist node_modules dist/dezrevellou.js dist/dezrevellou.min.js \
 			dist/dezrevellou dist/dezrevellou.min.css dist/dezrevellou.css\
 			dist/demo.html target/.docker
+
+static:  dist node_modules dist/dezrevellou.min.js dist/dezrevellou.min.css dist/demo.html
 
 node_modules: package.json
 	npm install
@@ -25,16 +27,17 @@ target/.docker: dist/dezrevellou Dockerfile
 
 dist/%.html: src/%.html
 	cp $< $@
-dist/%.js dist/%.js.map: src/%.ts
-	node_modules/.bin/tsc --sourceMap --outFile $@ $<
+dist/dezrevellou.js dist/dezrevellou.js.map: dist node_modules src/dezrevellou.ts
+	node_modules/.bin/tsc --sourceMap --outFile dist/dezrevellou.js src/dezrevellou.ts
 
-dist/%.min.js dist/%.min.js.map: dist/%.js
-	node_modules/.bin/uglifyjs $< --source-map url=dezrevellou.min.js.map --compress --mangle -o $@
+dist/dezrevellou.min.js dist/dezrevellou.min.js.map: dist node_modules dist/dezrevellou.js
+	node_modules/.bin/uglifyjs dist/dezrevellou.js --source-map url=dezrevellou.min.js.map --compress --mangle -o $@
 
-dist/%.css dist/%.css.map: src/%.sass
-	node_modules/.bin/sass --source-map $< $@
-dist/%.min.css dist/%.min.css.map: dist/%.css
-	node_modules/.bin/cleancss -O2 --source-map -o $@ $<
+dist/dezrevellou.css dist/dezrevellou.css.map: dist node_modules src/dezrevellou.sass
+	node_modules/.bin/sass src/dezrevellou.sass --source-map dist/dezrevellou.css
+
+dist/dezrevellou.min.css dist/dezrevellou.min.css.map: dist node_modules dist/dezrevellou.css
+	cd dist && ../node_modules/.bin/cleancss -O2 --source-map --input-source-map dezrevellou.css.map -o dezrevellou.min.css dezrevellou.css
 
 test: target/.last-test-run
 clippy: target/.last-clippy-run

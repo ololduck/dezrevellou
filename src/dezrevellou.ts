@@ -55,42 +55,39 @@ class ArticleComment {
     }
 }
 
+class Translation {
+    comment: string
+    name: string
+    website: string
+    email: string
+    send: string
+    noComments: string
+}
+
 class Dezrevellou {
     apiUrl: string;
     slug: string;
     comments: ArticleComment[];
+    translation: Translation;
 
-    createNewCommentForm() {
-        return `<div id="dezrevellou-comment-form">
-<textarea name="dezrevellou-comment" placeholder="Votre commentaire ici..."></textarea>
-<input class="dezrevellou-author" type="text" name="dezrevellou-author-name" placeholder="nom (optionnel)" />
-<input class="dezrevellou-author" type="url" name="dezrevellou-author-website" placeholder="site web (optionnel)" />
-<input class="dezrevellou-author" type="email" name="dezrevellou-author-email" placeholder="email(optionnel;non-partagé)"/>
-<button id="dezrevellou-submit" type="button"
-    onclick="return dezrevellou.postNewComment();">Envoyer</button>
-</div>`;
-    }
-
-    getAndRenderComments() {
-        fetch(this.apiUrl + "/comments/" + this.slug)
-            .then(resp => resp.json())
-            .then(data => data.map(e => new ArticleComment(e)))
-            .then(comments => {
-                this.comments = comments;
-                const comment_list = document.getElementById("dezrevellou-comments-list");
-                comment_list.innerText = '';
-                if (this.comments.length > 0) {
-                    this.comments.forEach(c => comment_list.appendChild(c.createNode()));
-                } else {
-                    comment_list.innerHTML = "<p>Pas de commentaires pour l'instant…</p>"
-                }
-            })
-            .catch(err => console.error(err));
-    }
-
-    constructor(apiUrl: string, slug: string, elementSelector: string) {
+    /**
+     * Launches Dezrevelloù
+     * @param apiUrl the base api url
+     * @param slug an unique identifier for the comments. All comments on this will be attached to this slug
+     * @param elementSelector // HTML id of the Dezrevelloù element
+     * @param translation // a map of translated strings
+     */
+    constructor(apiUrl: string, slug: string, elementSelector: string = "dezrevellou", translation: Translation = {
+        comment: "Type your comment here...",
+        name: "name (optional)",
+        website: "website (optional)",
+        email: "email (optional;not shared)",
+        send: "Send",
+        noComments: "No comments… yet."
+    }) {
         this.apiUrl = apiUrl;
         this.slug = slug;
+        this.translation = translation;
         this.comments = [];
         dezrevellou = this;
         let comment_root = document.getElementById(elementSelector);
@@ -104,6 +101,43 @@ class Dezrevellou {
         comment_root.innerHTML += this.signature();
     }
 
+    /**
+     * Creates the form for comment posting
+     */
+    createNewCommentForm() {
+        return `<div id="dezrevellou-comment-form">
+<textarea name="dezrevellou-comment" placeholder="${this.translation.comment}"></textarea>
+<input class="dezrevellou-author" type="text" name="dezrevellou-author-name" placeholder="${this.translation.name}" />
+<input class="dezrevellou-author" type="url" name="dezrevellou-author-website" placeholder="${this.translation.website}" />
+<input class="dezrevellou-author" type="email" name="dezrevellou-author-email" placeholder="${this.translation.email}"/>
+<button id="dezrevellou-submit" type="button"
+    onclick="return dezrevellou.postNewComment();">${this.translation.send}</button>
+</div>`;
+    }
+
+    /**
+     * Requests the comments from the server and renders them
+     */
+    getAndRenderComments() {
+        fetch(this.apiUrl + "/comments/" + this.slug)
+            .then(resp => resp.json())
+            .then(data => data.map(e => new ArticleComment(e)))
+            .then(comments => {
+                this.comments = comments;
+                const comment_list = document.getElementById("dezrevellou-comments-list");
+                comment_list.innerText = '';
+                if (this.comments.length > 0) {
+                    this.comments.forEach(c => comment_list.appendChild(c.createNode()));
+                } else {
+                    comment_list.innerHTML = `<p>${this.translation.noComments}</p>`
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    /**
+     * returns html for a "powered by dezrevellou" section
+     */
     signature() {
         return `<hr/><p id="dezrevellou-signature"><em>powered by <a href="https://github.com/paulollivier/dezrevellou">dezrevelloù</a>.</em></p>`
     }

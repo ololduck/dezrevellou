@@ -47,7 +47,20 @@ A simple usage in a "static" webpage would look like the following:
 </body>
 </html>
 ```
-#### specific case: a domain-wide instance
+#### Translation
+
+The `Dezrevellou` object accepts an optional parameter with the following default value:
+```javascript
+translation = {
+    comment: "Type your comment here...",
+    name: "name (optional)",
+    website: "website (optional)",
+    email: "email (optional;not shared)",
+    send: "Send"
+}
+```
+
+#### Specific case: a domain-wide instance
 
 Let's suppose you want to use a single instance of dezrevelloù for all your websites: you would typically install it in 
 its own subdomain.
@@ -69,11 +82,19 @@ server {
         }
         
         root /var/www/my-awesome-blog/html;
-        add_header Access-Control-Allow-Origin https://blog.my.domain/;
+        add_header Access-Control-Allow-Origin https://comments.my.domain/;
         add_header Access-Control-Max-Age 3600;
         add_header Access-Control-Expose-Headers Content-Length;
         add_header Access-Control-Allow-Headers Range;
         # --8<--
+    }
+}
+server {
+    server_name comments.my.domain
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://localhost:3000;
     }
 }
 ```
@@ -85,7 +106,7 @@ My personnal recommendation is to use the same domain for both the static websit
 This is done by configuring your favourite webserver to serve different content from different locations.
 
 For instance, `/comments` would pass the request to the api, while the rest of the locations would
-simply return your static website, containing your own `dezrevellou.min.{css,js}`.
+simply return your static website, containing your own copy of `dezrevellou.min.{css,js}`.
 
 You will find below a sample nginx configuration, [used for testing](vhost.nginx)
 in the [docker-compose file](docker-compose.yml):
@@ -118,7 +139,7 @@ server {
 - [ ] notifications
 - [ ] replies
 - [ ] sqlite
-- [ ] translation support
+- [x] translation support
 
 ### nice to have
 
@@ -140,6 +161,7 @@ $ make
 
 This will build everything:
 - the api binary
+- docker image
 - the js & css files, compressed & uncompressed 
 - a demo.html page
 
